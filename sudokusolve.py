@@ -29,7 +29,7 @@ def generate_adjecency_list(board: list[list[int]]) -> dict:
     return output
 
 # My own algorithm from leetcode that beats 96.7%
-def is_valid_sudoku(self, board: list[list[str]]) -> bool:
+def is_valid_sudoku(board: list[list[str]]) -> bool:
         # Check column
         for j in range(9):
             entries = []
@@ -74,17 +74,38 @@ def find_possible_replacements(adjList, board, coords):
             output.remove(current)
     return output
 
-def findEasiestSolve(adjList, board):
+def find_easiest_solve(adjList, board):
     lowest_number = 9
+    coords = (-1, -1)
     for i in range(9):
-        for j in board[i]:
-            print("h")
-
+        for j in range(9):
+            if(board[i][j]) != ".":
+                continue
+            replacements = find_possible_replacements(adjList, board, (i, j))
+            if len(replacements) < lowest_number:
+                lowest_number = len(replacements)
+                coords = (i, j)
+    return (lowest_number, coords)
 
 adjList = generate_adjecency_list(board)
 
-solvedBoard = board
-print_sudoku(board)
+stack = []
+stack.append(board)
+
+tmp_board = board
+
+
+while True:
+    possibilities = find_possible_replacements(adjList, board, find_easiest_solve(adjList, tmp_board)[1])
+    coords = find_easiest_solve(adjList, tmp_board)[1]
+    tmp_board[coords[0]][coords[1]] = possibilities[0]
+    print(possibilities)
+
+    if sum(x.count('.') for x in tmp_board) == 0 and is_valid_sudoku(tmp_board):
+        print_sudoku(tmp_board)
+        break
+    
+
 
 # Find . with least possible numbers to replace it
 # Set to 1
