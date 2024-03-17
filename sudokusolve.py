@@ -1,4 +1,14 @@
-board = [["5","3",".",".","7",".",".",".","."],["6",".",".","1","9","5",".",".","."],[".","9","8",".",".",".",".","6","."],["8",".",".",".","6",".",".",".","3"],["4",".",".","8",".","3",".",".","1"],["7",".",".",".","2",".",".",".","6"],[".","6",".",".",".",".","2","8","."],[".",".",".","4","1","9",".",".","5"],[".",".",".",".","8",".",".","7","9"]]
+import copy
+
+board = [["6",".",".",".","7","1","9",".","4"]
+,[".","3",".",".",".",".",".",".","6"]
+,[".",".",".",".","5",".",".",".","."]
+,[".","2",".",".","1","4",".","7","."]
+,["1",".",".","5",".",".",".",".","."]
+,[".",".",".","3",".",".","4",".","."]
+,[".",".",".","4",".",".",".",".","."]
+,[".",".","8",".",".",".",".","2","."]
+,["3",".",".",".","6","9","7",".","."]]
 
 
 # Step 1:
@@ -90,19 +100,30 @@ def find_easiest_solve(adjList, board):
 adjList = generate_adjecency_list(board)
 
 stack = []
-stack.append(board)
 
-tmp_board = board
-
+print_sudoku(board)
 
 while True:
-    possibilities = find_possible_replacements(adjList, board, find_easiest_solve(adjList, tmp_board)[1])
-    coords = find_easiest_solve(adjList, tmp_board)[1]
-    tmp_board[coords[0]][coords[1]] = possibilities[0]
-    print(possibilities)
+    coords = find_easiest_solve(adjList, board)[1]
+    possibilities = find_possible_replacements(adjList, board, coords)
+    print(possibilities, coords)
 
-    if sum(x.count('.') for x in tmp_board) == 0 and is_valid_sudoku(tmp_board):
-        print_sudoku(tmp_board)
+    if len(possibilities) > 1:
+        stack.append((copy.deepcopy(board), coords, possibilities[1:]))
+        print(stack[0][1:])
+
+    if len(possibilities) < 1:
+        popped = stack.pop()
+        board = popped[0]
+        coords = popped[1]
+        possibilities = popped[2]
+        print_sudoku(board)
+        print(possibilities, coords)
+
+    board[coords[0]][coords[1]] = possibilities[0]   
+
+    if sum(x.count('.') for x in board) == 0 and is_valid_sudoku(board):
+        print_sudoku(board)
         break
     
 
